@@ -14,22 +14,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        minHeight: '440px',
-        maxHeight: '560px',
-        borderRadius: 'var(--radius-lg)',
-        overflow: 'hidden',
-        marginBottom: '3rem',
-        backgroundColor: 'var(--bg-surface)',
-        backgroundImage: 'radial-gradient(ellipse at top right, rgba(245, 158, 11, 0.15), transparent 60%)',
-        border: '1px solid var(--border-subtle)',
-        display: 'flex',
-        alignItems: 'flex-end'
-      }}
-    >
+    <div className="hero-banner-card">
       {/* High-res Backdrop with Graceful Fallback */}
       {movie.backdropUrl && !imageError && (
         <img
@@ -54,24 +39,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
           position: 'absolute',
           inset: 0,
           background: `
-            linear-gradient(to right, rgba(11, 13, 19, 0.96) 0%, rgba(11, 13, 19, 0.76) 32%, rgba(11, 13, 19, 0.12) 58%, transparent 78%),
-            linear-gradient(to top, rgba(11, 13, 19, 0.90) 0%, rgba(11, 13, 19, 0.2) 22%, transparent 48%)
+            linear-gradient(to right, rgba(11, 13, 19, 0.97) 0%, rgba(11, 13, 19, 0.82) 32%, rgba(11, 13, 19, 0.15) 56%, transparent 75%),
+            linear-gradient(to top, rgba(11, 13, 19, 0.94) 0%, rgba(11, 13, 19, 0.25) 20%, transparent 45%)
           `
         }}
       />
 
       {/* Hero Content & Poster Container */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          padding: '2.5rem 2rem',
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '2.25rem'
-        }}
-      >
+      <div className="hero-inner-container">
         {/* Prominent Movie Poster Card on Tablet & Desktop */}
         {movie.posterUrl && (
           <div

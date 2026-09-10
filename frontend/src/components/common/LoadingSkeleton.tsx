@@ -97,12 +97,11 @@ export const MovieRailSkeleton: React.FC<{ count?: number }> = ({ count = 6 }) =
 export const HeroBannerSkeleton: React.FC = () => {
   return (
     <div
-      className="skeleton"
+      className="hero-banner-card skeleton"
       style={{
         width: '100%',
-        height: '460px',
-        borderRadius: 'var(--radius-lg)',
-        marginBottom: '2.5rem'
+        minHeight: '480px',
+        maxHeight: '580px'
       }}
     />
   );

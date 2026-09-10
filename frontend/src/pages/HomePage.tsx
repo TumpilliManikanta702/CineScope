@@ -63,13 +63,18 @@ export const HomePage: React.FC = () => {
   const featuredMovie = trending.length > 0 ? trending[0] : null;
 
   return (
-    <div className="container" style={{ paddingTop: '1.5rem' }}>
-      {/* Hero Section */}
-      {loading ? (
-        <HeroBannerSkeleton />
-      ) : (
-        featuredMovie && <HeroBanner movie={featuredMovie} />
-      )}
+    <div style={{ width: '100%', overflowX: 'hidden' }}>
+      {/* Hero Section: Full viewport width on desktop, comfortable breathing room on tablet/mobile */}
+      <section className="hero-viewport-wrapper">
+        {loading ? (
+          <HeroBannerSkeleton />
+        ) : (
+          featuredMovie && <HeroBanner movie={featuredMovie} />
+        )}
+      </section>
+
+      {/* Main Content Sections: Kept strictly within existing max-width .container */}
+      <div className="container" style={{ paddingTop: '0.75rem' }}>
 
       {/* Trending Now Rail */}
       {loading ? (
@@ -206,6 +211,7 @@ export const HomePage: React.FC = () => {
           <MovieGrid movies={upcoming.slice(0, 10)} />
         )}
       </section>
+      </div>
     </div>
   );
 };
