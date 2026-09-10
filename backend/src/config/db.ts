@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
 import { config } from './env';
+
+// Ensure SRV records for mongodb+srv:// resolve reliably across Windows DNS configurations
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+} catch (e) {
+  // Ignore if custom DNS cannot be set
+}
 
 let memoryServer: any = null;
 
