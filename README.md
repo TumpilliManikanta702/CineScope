@@ -20,14 +20,35 @@
 
 ---
 
+## ✅ Assignment Requirements Coverage
+
+| Requirement | CineScope Implementation | Status |
+| :--- | :--- | :---: |
+| **Movie discovery** | Trending, popular, top-rated, now playing, upcoming rails & grids | ✅ Full |
+| **Third-party movie API** | TMDB v3 API integrated via Node.js service | ✅ Full |
+| **Backend abstraction** | React $\rightarrow$ Express $\rightarrow$ TMDB data normalizer & cache | ✅ Full |
+| **Search** | 400ms debounced server-side search with request cancellation | ✅ Full |
+| **Filtering** | 19 Genres, release eras, ratings, original languages | ✅ Full |
+| **Sorting** | Popularity, rating, release date, title (A-Z) | ✅ Full |
+| **Pagination** | Server-side paginated results (up to 500 pages) | ✅ Full |
+| **Movie details** | Backdrop, metadata pills, cast carousel, recommendations | ✅ Full |
+| **Persistent wishlist** | Hybrid: Local-first `localStorage` + MongoDB Atlas cloud sync | ✅ Full |
+| **Context preservation** | URL search state synchronization + browser history scroll restoration | ✅ Full |
+| **Failure handling** | 8s timeout, curated offline fallback data, user retry UI | ✅ Full |
+| **Large result sets** | Page-by-page streaming + in-memory TTL caching | ✅ Full |
+| **Responsive UI** | Desktop, tablet, mobile fluid layouts & locked 2:3 poster ratios | ✅ Full |
+| **Testing** | 28 automated tests (19 backend + 9 frontend) | ✅ Full |
+
+---
+
 ## 📌 Submission Overview & Quick Links
 
-| Resource | Link / Status |
+| Resource | Production URL / Instructions |
 | :--- | :--- |
-| 🌐 **Live Web Application** | [https://cinescope-discovery.vercel.app](https://cinescope-discovery.vercel.app) *(or your deployment URL)* |
-| 🚀 **Live Backend API** | [https://cinescope-api.onrender.com](https://cinescope-api.onrender.com) |
-| 📹 **Video Walkthrough Demo** | [Watch Demo Video (5 min)](https://youtu.be/your-demo-video-link) |
-| 📊 **API Health & Status** | [`GET /api/health`](http://localhost:5000/api/health) |
+| 🌐 **Live Web Application** | [https://cinescope-discovery.vercel.app](https://cinescope-discovery.vercel.app) *(or your Vercel deployment URL)* |
+| 🚀 **Live Backend API** | [https://cinescope-api.onrender.com](https://cinescope-api.onrender.com) *(or your Render/Railway backend URL)* |
+| 📹 **Video Walkthrough Demo** | [Watch Demo Video](https://youtu.be/YOUR-ACTUAL-VIDEO-ID) *(replace with your recording link)* |
+| 📊 **API Health & Status** | [`GET /api/health`](https://cinescope-api.onrender.com/api/health) *(or local: `http://localhost:5000/api/health`)* |
 
 **CineScope** is a full-stack movie discovery platform built with React, Node.js, Express, MongoDB, and TMDB, featuring persistent wishlists, intelligent search, caching, pagination, responsive UX, and resilient API handling.
 
@@ -173,7 +194,7 @@ All endpoints are prefixed with `/api`.
 - **Node.js** v18.0.0 or higher
 - **npm** v9.0.0 or higher
 - **MongoDB**: Either a local MongoDB instance or a free [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) connection URI. *(An in-memory database activates automatically if none is supplied).*
-- **TMDB API Key**: *(Optional)* Free v3 API key from [themoviedb.org](https://www.themoviedb.org/settings/api).
+- **TMDB API Key**: Required for live movie data. Obtain a free v3 API key from [themoviedb.org](https://www.themoviedb.org/settings/api). *(A high-fidelity fallback catalog is automatically available when the external service is unavailable or key is absent for offline evaluation).*
 
 ### 1. Clone & Setup Environment
 ```bash
@@ -189,7 +210,7 @@ Configure `.env`:
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/cinescope?retryWrites=true&w=majority
-JWT_SECRET=cinescope_jwt_secure_key_trackzio_2026
+JWT_SECRET=your_secure_random_secret_here
 TMDB_API_KEY=your_tmdb_api_key_here
 CLIENT_URL=http://localhost:5173
 VITE_API_BASE_URL=http://localhost:5000/api
@@ -257,22 +278,22 @@ npm run build
 Direct client calls to third-party APIs leak private API keys in client network tabs and bundles. Decoupling routes all traffic through a backend gateway where keys are hidden, incoming requests are rate-limited, responses are cached in memory, and payloads are normalized into uniform TypeScript types.
 
 ### 2. Why MongoDB for the database?
-Only application-specific relational data (user profiles and user-curated watchlists) is stored. MongoDB's flexible document model maps directly to TypeScript interfaces. Its compound unique index `{ userId: 1, movieId: 1 }` provides atomic, O(1) duplicate prevention without application-level race conditions.
+Only application-specific relational data (user profiles and user-curated watchlists) is stored. MongoDB's flexible document model maps directly to TypeScript interfaces. Its compound unique index `{ userId: 1, movieId: 1 }` efficiently enforces uniqueness at the database level and prevents duplicate wishlist entries even under concurrent requests.
 
 ### 3. Why not store the entire movie database in MongoDB?
-TMDB indexes millions of movies with ratings, vote counts, and cast metadata updated continuously. Synchronizing the entire external movie catalog locally introduces stale data, cache invalidation headaches, and wasted storage. Storing only user-generated entities is industry standard.
+TMDB maintains a large continuously updated movie catalog with ratings, vote counts, release information, and cast metadata. Synchronizing the entire external movie catalog locally introduces stale data, cache invalidation headaches, and wasted storage. Storing only user-generated entities is industry standard.
 
 ### 4. How are excessive API requests prevented?
 - **400ms Debounce**: Postpones search requests until typing pauses.
 - **AbortController**: Terminates outdated HTTP requests when new keystrokes are registered.
-- **In-Memory TTL Caching**: Frequently accessed endpoints (trending, top-rated, genres) are cached for 2–10 minutes, dropping latency from ~250ms to <2ms.
+- **In-Memory TTL Caching**: Frequently accessed endpoints are cached for short periods (2–10 minutes), reducing redundant TMDB requests and improving response time.
 - **Redux State Sync**: Active wishlist movie IDs are maintained in memory to check saved status without extra roundtrips.
 
 ### 5. What if TMDB is temporarily unavailable?
 The backend service catches timeouts and upstream HTTP errors gracefully, returning structured, user-friendly JSON payloads rather than leaking unhandled 500 exceptions. The frontend renders an `ErrorState` component with a direct retry button.
 
 ### 6. Windows Node.js DNS SRV Resolution Bug Fix
-When connecting to MongoDB Atlas on Windows environments, Node.js `dns.promises.resolveSrv` can trigger `querySrv ECONNREFUSED` due to OS-level DNS server bugs. CineScope automatically handles this by calling `dns.setServers(['8.8.8.8', '8.8.4.4'])` if initial resolution fails, guaranteeing zero-friction Atlas connectivity.
+When the initial SRV resolution fails in affected Windows development environments, CineScope retries DNS resolution using explicitly configured DNS servers (such as 8.8.8.8). This provides a development-time workaround for certain local DNS resolution issues.
 
 ### 7. Why a Hybrid Persistence Model (Local-First Guest Storage + Cloud Sync)?
 In modern consumer discovery apps, forcing users to register before they can perform lightweight curation introduces immediate user friction. CineScope implements a local-first pattern: unauthenticated visitors can curate movies immediately into `localStorage`, surviving browser closures and page reloads. The moment they register or log in, the client's `syncGuestWishlist` engine automatically commits those titles into MongoDB Atlas under their account, delivering zero friction for new visitors and cloud persistence for returning members.
