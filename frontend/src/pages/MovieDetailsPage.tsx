@@ -374,7 +374,7 @@ export const MovieDetailsPage: React.FC = () => {
             </div>
 
             {/* Genre Pills */}
-            {movie.genres && movie.genres.length > 0 && (
+            {Array.isArray(movie.genres) && movie.genres.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {movie.genres.map((genre) => (
                   <span
@@ -413,7 +413,7 @@ export const MovieDetailsPage: React.FC = () => {
         </div>
 
         {/* Cast Section */}
-        {movie.cast && movie.cast.length > 0 && (
+        {Array.isArray(movie.cast) && movie.cast.length > 0 && (
           <section style={{ marginTop: '4rem', marginBottom: '3rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
               <Users size={20} color="var(--color-accent)" />
@@ -435,7 +435,7 @@ export const MovieDetailsPage: React.FC = () => {
         )}
 
         {/* Recommendations & Similar Rails */}
-        {movie.recommendations && movie.recommendations.length > 0 && (
+        {Array.isArray(movie.recommendations) && movie.recommendations.length > 0 && (
           <div style={{ marginTop: '3.5rem' }}>
             <MovieRail
               title="You Might Also Enjoy"
@@ -445,7 +445,7 @@ export const MovieDetailsPage: React.FC = () => {
           </div>
         )}
 
-        {movie.similar && movie.similar.length > 0 && (
+        {Array.isArray(movie.similar) && movie.similar.length > 0 && (
           <div style={{ marginTop: '2rem' }}>
             <MovieRail
               title="Similar Titles"

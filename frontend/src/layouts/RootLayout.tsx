@@ -8,6 +8,8 @@ import { useAppDispatch, useAppSelector } from '../store';
 import { fetchCurrentUser } from '../store/slices/authSlice';
 import { syncGuestWishlist } from '../store/slices/wishlistSlice';
 
+import { ErrorBoundary } from '../components/common/ErrorBoundary';
+
 export const RootLayout: React.FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
@@ -45,7 +47,9 @@ export const RootLayout: React.FC = () => {
     >
       <Navbar />
       <main style={{ flex: 1, paddingBottom: '3rem' }}>
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       <Footer />
       <ToastContainer />

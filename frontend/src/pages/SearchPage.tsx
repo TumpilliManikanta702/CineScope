@@ -37,9 +37,9 @@ export const SearchPage: React.FC = () => {
     moviesApi
       .searchMovies(filters, controller.signal)
       .then((res) => {
-        setMovies(res.data);
-        setTotalResults(res.meta.totalResults);
-        setTotalPages(res.meta.totalPages);
+        setMovies(Array.isArray(res?.data) ? res.data : []);
+        setTotalResults(res?.meta?.totalResults ?? 0);
+        setTotalPages(res?.meta?.totalPages ?? 1);
         setLoading(false);
       })
       .catch((err) => {
@@ -147,7 +147,7 @@ export const SearchPage: React.FC = () => {
         />
       ) : loading ? (
         <MovieGridSkeleton count={12} />
-      ) : movies.length === 0 ? (
+      ) : (!Array.isArray(movies) || movies.length === 0) ? (
         <EmptyState
           title="No movies found"
           description="We couldn't find any movies matching your current filters and query. Try clearing filters or using different keywords."

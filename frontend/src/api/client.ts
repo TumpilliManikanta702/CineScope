@@ -24,7 +24,20 @@ apiClient.interceptors.request.use(
 
 // Response interceptor: normalize error messages
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // If an SPA host rewrites /api/* to index.html, detect it immediately
+    if (
+      typeof response.data === 'string' &&
+      (response.data.toLowerCase().includes('<!doctype') || response.data.toLowerCase().includes('<html'))
+    ) {
+      return Promise.reject(
+        new Error(
+          'API endpoint returned HTML instead of JSON. Please verify that VITE_API_BASE_URL is configured in your Vercel Environment Variables to point to your live Render backend (e.g. https://<your-backend>.onrender.com/api).'
+        )
+      );
+    }
+    return response;
+  },
   (error: AxiosError<any>) => {
     // If request was canceled via AbortController, rethrow as canceled
     if (axios.isCancel(error)) {

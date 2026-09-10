@@ -32,11 +32,11 @@ export const HomePage: React.FC = () => {
         moviesApi.getUpcoming(1)
       ]);
 
-      setTrending(trendingRes.data);
-      setPopular(popularRes.data);
-      setTopRated(topRatedRes.data);
-      setNowPlaying(nowPlayingRes.data);
-      setUpcoming(upcomingRes.data);
+      setTrending(Array.isArray(trendingRes?.data) ? trendingRes.data : []);
+      setPopular(Array.isArray(popularRes?.data) ? popularRes.data : []);
+      setTopRated(Array.isArray(topRatedRes?.data) ? topRatedRes.data : []);
+      setNowPlaying(Array.isArray(nowPlayingRes?.data) ? nowPlayingRes.data : []);
+      setUpcoming(Array.isArray(upcomingRes?.data) ? upcomingRes.data : []);
     } catch (err: any) {
       setError(err.message || 'Failed to load movie catalog. Please try again.');
     } finally {
@@ -60,7 +60,7 @@ export const HomePage: React.FC = () => {
     );
   }
 
-  const featuredMovie = trending.length > 0 ? trending[0] : null;
+  const featuredMovie = Array.isArray(trending) && trending.length > 0 ? trending[0] : null;
 
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>
@@ -83,7 +83,7 @@ export const HomePage: React.FC = () => {
           <MovieRailSkeleton count={6} />
         </div>
       ) : (
-        trending.length > 0 && (
+        Array.isArray(trending) && trending.length > 1 && (
           <MovieRail
             title="Trending This Week"
             subtitle="The most watched and acclaimed cinema right now"
@@ -123,7 +123,7 @@ export const HomePage: React.FC = () => {
         {loading ? (
           <MovieGridSkeleton count={8} />
         ) : (
-          <MovieGrid movies={popular.slice(0, 10)} />
+          <MovieGrid movies={Array.isArray(popular) ? popular.slice(0, 10) : []} />
         )}
       </section>
 
@@ -134,7 +134,7 @@ export const HomePage: React.FC = () => {
           <MovieRailSkeleton count={6} />
         </div>
       ) : (
-        topRated.length > 0 && (
+        Array.isArray(topRated) && topRated.length > 0 && (
           <MovieRail
             title="Top Rated Masterpieces"
             subtitle="Critically acclaimed cinema rated 8.0 and above"
@@ -174,7 +174,7 @@ export const HomePage: React.FC = () => {
         {loading ? (
           <MovieGridSkeleton count={8} />
         ) : (
-          <MovieGrid movies={nowPlaying.slice(0, 10)} />
+          <MovieGrid movies={Array.isArray(nowPlaying) ? nowPlaying.slice(0, 10) : []} />
         )}
       </section>
 
@@ -208,7 +208,7 @@ export const HomePage: React.FC = () => {
         {loading ? (
           <MovieGridSkeleton count={8} />
         ) : (
-          <MovieGrid movies={upcoming.slice(0, 10)} />
+          <MovieGrid movies={Array.isArray(upcoming) ? upcoming.slice(0, 10) : []} />
         )}
       </section>
       </div>
