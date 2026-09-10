@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import { moviesApi } from '../api/movies.api';
 import { Movie } from '../types';
 import { HeroBanner } from '../components/movie/HeroBanner';
@@ -97,6 +99,20 @@ export const HomePage: React.FC = () => {
               Audience favorites across global theaters
             </p>
           </div>
+          <Link
+            to="/search?sort=popularity"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              color: 'var(--color-accent)'
+            }}
+          >
+            View All
+            <ArrowRight size={14} />
+          </Link>
         </div>
 
         {loading ? (
@@ -134,6 +150,20 @@ export const HomePage: React.FC = () => {
               Current theatrical releases and premieres
             </p>
           </div>
+          <Link
+            to="/search?sort=newest"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              color: 'var(--color-accent)'
+            }}
+          >
+            View All
+            <ArrowRight size={14} />
+          </Link>
         </div>
 
         {loading ? (
@@ -154,6 +184,20 @@ export const HomePage: React.FC = () => {
               Anticipated upcoming titles scheduled for release
             </p>
           </div>
+          <Link
+            to="/search?sort=newest"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              color: 'var(--color-accent)'
+            }}
+          >
+            View All
+            <ArrowRight size={14} />
+          </Link>
         </div>
 
         {loading ? (

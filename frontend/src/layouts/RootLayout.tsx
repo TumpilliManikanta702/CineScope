@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { Navbar } from '../components/common/Navbar';
 import { Footer } from '../components/common/Footer';
 import { ToastContainer } from '../components/common/ToastContainer';
@@ -11,6 +11,7 @@ import { fetchWishlist } from '../store/slices/wishlistSlice';
 export const RootLayout: React.FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
+  const navType = useNavigationType();
   const { isAuthenticated, token } = useAppSelector((state) => state.auth);
 
   // Restore session and sync wishlist on initial application boot
@@ -26,10 +27,12 @@ export const RootLayout: React.FC = () => {
     }
   }, [dispatch, isAuthenticated]);
 
-  // Scroll to top on route change
+  // Scroll to top on fresh forward navigation, but preserve viewport position on history back (POP)
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+    if (navType !== 'POP') {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname, navType]);
 
   return (
     <div

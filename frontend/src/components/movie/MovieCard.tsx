@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Film } from 'lucide-react';
+import { Film, Star } from 'lucide-react';
 import { Movie } from '../../types';
 import { RatingBadge } from '../common/RatingBadge';
 import { WishlistButton } from './WishlistButton';
@@ -8,6 +8,28 @@ import { WishlistButton } from './WishlistButton';
 interface MovieCardProps {
   movie: Movie;
 }
+
+const GENRE_NAME_MAP: Record<number, string> = {
+  28: 'Action',
+  12: 'Adventure',
+  16: 'Animation',
+  35: 'Comedy',
+  80: 'Crime',
+  99: 'Doc',
+  18: 'Drama',
+  10751: 'Family',
+  14: 'Fantasy',
+  36: 'History',
+  27: 'Horror',
+  10402: 'Music',
+  9648: 'Mystery',
+  10749: 'Romance',
+  878: 'Sci-Fi',
+  10770: 'TV',
+  53: 'Thriller',
+  10752: 'War',
+  37: 'Western'
+};
 
 export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const navigate = useNavigate();
@@ -26,6 +48,10 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   };
 
   const yearDisplay = movie.releaseYear ? movie.releaseYear : 'TBA';
+  const primaryGenre =
+    (movie.genres && movie.genres.length > 0 && movie.genres[0]) ||
+    (movie.genreIds && movie.genreIds.length > 0 && GENRE_NAME_MAP[movie.genreIds[0]]) ||
+    null;
 
   return (
     <div
@@ -157,7 +183,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           padding: '0.75rem 0.85rem',
           display: 'flex',
           flexDirection: 'column',
-          gap: '0.25rem',
+          gap: '0.35rem',
           backgroundColor: 'var(--bg-surface)'
         }}
       >
@@ -165,7 +191,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           title={movie.title}
           style={{
             fontSize: '0.92rem',
-            fontWeight: 600,
+            fontWeight: 700,
             color: 'var(--text-primary)',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
@@ -182,23 +208,31 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
             alignItems: 'center',
             justifyContent: 'space-between',
             fontSize: '0.8rem',
-            color: 'var(--text-muted)'
+            color: 'var(--text-secondary)'
           }}
         >
-          <span>{yearDisplay}</span>
-          {movie.genres && movie.genres.length > 0 && (
-            <span
-              style={{
-                fontSize: '0.75rem',
-                color: 'var(--text-secondary)',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                padding: '0.1rem 0.35rem',
-                borderRadius: '4px'
-              }}
-            >
-              {movie.genres[0]}
-            </span>
-          )}
+          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '72%', color: 'var(--text-muted)' }}>
+            <span>{yearDisplay}</span>
+            {primaryGenre && (
+              <>
+                <span aria-hidden="true"> • </span>
+                <span>{primaryGenre}</span>
+              </>
+            )}
+          </span>
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.2rem',
+              color: 'var(--color-accent)',
+              fontWeight: 700,
+              fontSize: '0.78rem'
+            }}
+          >
+            <Star size={11} fill="var(--color-accent)" stroke="none" />
+            {movie.rating > 0 ? movie.rating.toFixed(1) : 'N/A'}
+          </span>
         </div>
       </div>
     </div>

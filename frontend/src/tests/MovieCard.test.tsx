@@ -32,7 +32,7 @@ describe('MovieCard Component', () => {
 
     expect(screen.getByText('Dune: Part Two')).toBeInTheDocument();
     expect(screen.getByText('2024')).toBeInTheDocument();
-    expect(screen.getByText('8.4')).toBeInTheDocument();
+    expect(screen.getAllByText('8.4').length).toBeGreaterThan(0);
     expect(screen.getByText('Science Fiction')).toBeInTheDocument();
   });
 

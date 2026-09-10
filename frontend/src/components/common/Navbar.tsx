@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Film, Compass, Search, Heart, User as UserIcon, LogOut, Menu, X, LogIn } from 'lucide-react';
+import { Film, Compass, Search, Heart, User as UserIcon, LogOut, Menu, X, LogIn, ChevronDown } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store';
-import { openAuthModal } from '../../store/slices/uiSlice';
+import { openAuthModal, addToast } from '../../store/slices/uiSlice';
 import { logout } from '../../store/slices/authSlice';
 import { clearWishlist } from '../../store/slices/wishlistSlice';
 
@@ -13,11 +13,30 @@ export const Navbar: React.FC = () => {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const wishlistCount = useAppSelector((state) => state.wishlist.items.length);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    if (userDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [userDropdownOpen]);
 
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearWishlist());
+    setUserDropdownOpen(false);
     setMobileMenuOpen(false);
+    dispatch(addToast({ message: 'Signed out successfully', type: 'info' }));
     navigate('/');
   };
 
@@ -150,54 +169,181 @@ export const Navbar: React.FC = () => {
         {/* Desktop Auth Controls */}
         <div style={{ display: 'none', alignItems: 'center', gap: '1rem' }} className="desktop-auth">
           {isAuthenticated && user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div
+            <div ref={dropdownRef} style={{ position: 'relative' }}>
+              <button
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                aria-haspopup="true"
+                aria-expanded={userDropdownOpen}
+                aria-label={`User menu for ${user.name}`}
                 style={{
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  backgroundColor: 'var(--bg-surface)',
-                  padding: '0.35rem 0.75rem',
+                  gap: '0.55rem',
+                  backgroundColor: userDropdownOpen ? 'var(--bg-subtle)' : 'var(--bg-surface)',
+                  padding: '0.4rem 0.85rem',
                   borderRadius: 'var(--radius-full)',
-                  border: '1px solid var(--border-medium)'
+                  border: `1px solid ${userDropdownOpen ? 'var(--color-accent)' : 'var(--border-medium)'}`,
+                  color: 'var(--text-primary)',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all var(--transition-fast)'
                 }}
               >
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: '#10b981',
+                    boxShadow: '0 0 6px rgba(16, 185, 129, 0.6)'
+                  }}
+                />
+                <span>{user.name}</span>
+                <ChevronDown
+                  size={14}
+                  style={{
+                    color: 'var(--text-muted)',
+                    transform: userDropdownOpen ? 'rotate(180deg)' : 'none',
+                    transition: 'transform var(--transition-fast)'
+                  }}
+                />
+              </button>
+
+              {userDropdownOpen && (
                 <div
                   style={{
-                    width: '24px',
-                    height: '24px',
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--color-accent-subtle)',
-                    color: 'var(--color-accent)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                    position: 'absolute',
+                    top: 'calc(100% + 0.5rem)',
+                    right: 0,
+                    width: '210px',
+                    backgroundColor: 'var(--bg-surface)',
+                    border: '1px solid var(--border-medium)',
+                    borderRadius: 'var(--radius-md)',
+                    boxShadow: 'var(--shadow-lg)',
+                    padding: '0.5rem 0',
+                    zIndex: 110,
+                    backdropFilter: 'blur(16px)'
                   }}
                 >
-                  <UserIcon size={14} />
-                </div>
-                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                  {user.name}
-                </span>
-              </div>
+                  {/* User identity summary */}
+                  <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid var(--border-subtle)' }}>
+                    <p style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {user.name}
+                    </p>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {user.email}
+                    </p>
+                  </div>
 
-              <button
-                onClick={handleLogout}
-                aria-label="Log Out"
-                title="Log Out"
-                style={{
-                  color: 'var(--text-muted)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0.4rem',
-                  borderRadius: 'var(--radius-sm)',
-                  transition: 'color var(--transition-fast)'
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-danger)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-              >
-                <LogOut size={18} />
-              </button>
+                  {/* Dropdown Options */}
+                  <div style={{ padding: '0.25rem 0' }}>
+                    <button
+                      onClick={() => {
+                        setUserDropdownOpen(false);
+                        dispatch(addToast({ message: `Active session: ${user.name} (${user.email})`, type: 'info' }));
+                      }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        padding: '0.5rem 1rem',
+                        fontSize: '0.85rem',
+                        color: 'var(--text-secondary)',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        transition: 'all var(--transition-fast)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--bg-subtle)';
+                        e.currentTarget.style.color = 'var(--text-primary)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = 'var(--text-secondary)';
+                      }}
+                    >
+                      <UserIcon size={15} />
+                      Profile
+                    </button>
+
+                    <Link
+                      to="/wishlist"
+                      onClick={() => setUserDropdownOpen(false)}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.6rem',
+                        padding: '0.5rem 1rem',
+                        fontSize: '0.85rem',
+                        color: 'var(--text-secondary)',
+                        textDecoration: 'none',
+                        transition: 'all var(--transition-fast)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--bg-subtle)';
+                        e.currentTarget.style.color = 'var(--text-primary)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = 'var(--text-secondary)';
+                      }}
+                    >
+                      <Heart size={15} />
+                      My Wishlist
+                      {wishlistCount > 0 && (
+                        <span
+                          style={{
+                            marginLeft: 'auto',
+                            padding: '0.1rem 0.45rem',
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            borderRadius: 'var(--radius-full)',
+                            backgroundColor: 'var(--color-accent-subtle)',
+                            color: 'var(--color-accent)'
+                          }}
+                        >
+                          {wishlistCount}
+                        </span>
+                      )}
+                    </Link>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid var(--border-subtle)', margin: '0.25rem 0' }} />
+
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.6rem',
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.85rem',
+                      color: 'var(--color-danger)',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-fast)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(244, 63, 94, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <LogOut size={15} />
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button

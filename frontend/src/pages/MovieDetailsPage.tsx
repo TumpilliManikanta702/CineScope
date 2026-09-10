@@ -115,23 +115,30 @@ export const MovieDetailsPage: React.FC = () => {
 
       {/* Main Details Card Layout */}
       <div className="container" style={{ position: 'relative', marginTop: '-360px', zIndex: 10 }}>
-        {/* Back Button */}
+        {/* Back / Continue Exploring Button */}
         <button
-          onClick={() => navigate(-1)}
-          aria-label="Back to previous results"
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              navigate('/search');
+            }
+          }}
+          aria-label="Back to search results or previous page"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.45rem',
             padding: '0.5rem 1rem',
             borderRadius: 'var(--radius-md)',
-            backgroundColor: 'rgba(11, 13, 19, 0.7)',
-            backdropFilter: 'blur(10px)',
+            backgroundColor: 'rgba(11, 13, 19, 0.75)',
+            backdropFilter: 'blur(12px)',
             border: '1px solid var(--border-medium)',
             color: 'var(--text-secondary)',
             fontSize: '0.85rem',
             fontWeight: 600,
             marginBottom: '1.75rem',
+            cursor: 'pointer',
             transition: 'all var(--transition-fast)'
           }}
           onMouseEnter={(e) => {

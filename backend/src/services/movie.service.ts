@@ -307,11 +307,42 @@ export class MovieService {
   // NORMALIZATION HELPERS
   // ==========================================
 
+  // Standard TMDB Genre ID to Name mapping for list endpoints
+  private static readonly GENRE_MAP: Record<number, string> = {
+    28: 'Action',
+    12: 'Adventure',
+    16: 'Animation',
+    35: 'Comedy',
+    80: 'Crime',
+    99: 'Documentary',
+    18: 'Drama',
+    10751: 'Family',
+    14: 'Fantasy',
+    36: 'History',
+    27: 'Horror',
+    10402: 'Music',
+    9648: 'Mystery',
+    10749: 'Romance',
+    878: 'Sci-Fi',
+    10770: 'TV Movie',
+    53: 'Thriller',
+    10752: 'War',
+    37: 'Western'
+  };
+
   private normalizeMovie(raw: any): Movie {
     const posterUrl = raw.poster_path ? `${config.TMDB_IMAGE_BASE_URL}/w500${raw.poster_path}` : null;
     const backdropUrl = raw.backdrop_path ? `${config.TMDB_IMAGE_BASE_URL}/w1280${raw.backdrop_path}` : null;
     const releaseDate = raw.release_date || null;
     const releaseYear = releaseDate ? new Date(releaseDate).getFullYear() : null;
+
+    const genreIds = raw.genre_ids || (raw.genres ? raw.genres.map((g: any) => g.id) : []);
+    let genres: string[] | undefined = undefined;
+    if (raw.genres && Array.isArray(raw.genres) && raw.genres.length > 0) {
+      genres = raw.genres.map((g: any) => (typeof g === 'string' ? g : g.name));
+    } else if (genreIds && genreIds.length > 0) {
+      genres = genreIds.map((id: number) => MovieService.GENRE_MAP[id]).filter(Boolean);
+    }
 
     return {
       id: raw.id,
@@ -324,8 +355,8 @@ export class MovieService {
       voteCount: raw.vote_count || 0,
       releaseDate,
       releaseYear: isNaN(releaseYear as number) ? null : releaseYear,
-      genreIds: raw.genre_ids || (raw.genres ? raw.genres.map((g: any) => g.id) : []),
-      genres: raw.genres ? raw.genres.map((g: any) => g.name) : undefined,
+      genreIds,
+      genres,
       popularity: raw.popularity,
       originalLanguage: raw.original_language
     };

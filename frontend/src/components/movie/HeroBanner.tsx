@@ -43,19 +43,19 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
             height: '100%',
             objectFit: 'cover',
             objectPosition: 'center 20%',
-            filter: 'brightness(0.7)'
+            filter: 'brightness(0.98)'
           }}
         />
       )}
 
-      {/* Cinematic Gradient Overlays */}
+      {/* Cinematic Gradient Overlays: Dark content on left, vibrant image on right */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           background: `
-            linear-gradient(to right, rgba(11, 13, 19, 0.95) 0%, rgba(11, 13, 19, 0.75) 45%, rgba(11, 13, 19, 0.25) 100%),
-            linear-gradient(to top, rgba(11, 13, 19, 1) 0%, rgba(11, 13, 19, 0.6) 40%, transparent 80%)
+            linear-gradient(to right, rgba(11, 13, 19, 0.96) 0%, rgba(11, 13, 19, 0.76) 32%, rgba(11, 13, 19, 0.12) 58%, transparent 78%),
+            linear-gradient(to top, rgba(11, 13, 19, 0.90) 0%, rgba(11, 13, 19, 0.2) 22%, transparent 48%)
           `
         }}
       />
