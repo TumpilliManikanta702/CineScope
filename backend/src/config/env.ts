@@ -11,7 +11,7 @@ export const config = {
   MONGODB_URI: process.env.MONGODB_URI || '',
   JWT_SECRET: process.env.JWT_SECRET || 'cinescope_secure_jwt_secret_dev_2026',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
-  TMDB_API_KEY: process.env.TMDB_API_KEY ? process.env.TMDB_API_KEY.trim() : '',
+  TMDB_API_KEY: (process.env.TMDB_API_KEY ? process.env.TMDB_API_KEY.trim() : '') || '140afbbf983f965b912a299dfe0a6cc1',
   TMDB_BASE_URL: 'https://api.themoviedb.org/3',
   TMDB_IMAGE_BASE_URL: 'https://image.tmdb.org/t/p',
   CACHE_TTL: parseInt(process.env.CACHE_TTL || '600', 10), // 10 minutes default
