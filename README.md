@@ -308,12 +308,33 @@ In modern consumer discovery apps, forcing users to register before they can per
 
 ---
 
+## 💡 Assumptions Made
+
+1. **Third-Party Movie Data Availability**: Assumed TMDB v3 is the primary data source, but acknowledged that free-tier API quotas and third-party downtime can occur. Therefore, an internal 1,611-line fallback catalog was engineered into the backend to ensure zero downtime.
+2. **Friction-Free Guest Exploration**: Assumed first-time users prefer exploring and curating without being forced to register immediately. The app implements a local-first architecture using `localStorage` for guests, transitioning to MongoDB Atlas cloud sync upon authentication.
+3. **Data Volatility & Caching**: Assumed movie metadata (synopsis, genre classification, release era, cast) changes infrequently, justifying an in-memory 10-minute TTL cache layer to optimize latency and conserve API limits.
+4. **Target Viewports & Modern Browsers**: Assumed users access the platform across mobile, tablet, and desktop environments using modern evergreen browsers (Chrome, Edge, Firefox, Safari) that support CSS Grid, Flexbox, and ES2020+.
+
+---
+
+## 🚀 What I Would Improve with Additional Time
+
+1. **Streaming Availability (JustWatch / TMDB Watch Providers)**: Integrate regional provider data so users can see which platforms (Netflix, Prime, Disney+, Apple TV) currently stream or rent a chosen title.
+2. **Distributed Redis Caching**: Migrate the backend in-memory cache to an external Redis cluster for multi-instance horizontal scalability and shared cache hit ratios across serverless instances.
+3. **User Reviews & Community Star Ratings**: Allow registered users to write written reviews, upvote critiques, and submit custom 1–10 star ratings alongside TMDB averages.
+4. **Personalized Recommendations Engine**: Implement an algorithmic recommendation feed based on the user's saved wishlist genres, release eras, and actors, rather than movie-by-movie similarity.
+5. **Progressive Web App (PWA) & Offline Mode**: Add a service worker and CacheStorage to allow offline browsing of previously viewed titles and offline wishlist management on mobile devices.
+
+---
+
 ## 🤖 AI Usage Disclosure
 
-In adherence to academic and industry evaluation standards:
-- **Pair-Programming Tooling**: This project was developed with assistance from **Google Antigravity / Gemini**.
-- **Scope of AI Usage**: Scaffolding repetitive boilerplate, validating edge-case scenarios, generating initial unit test mocks, and refining documentation structure.
-- **Engineering Ownership**: System architecture, data modelling, component structure, security implementations (bcrypt/JWT/Helmet), compound database indexing, responsive layout engineering, and debugging (such as the Windows DNS SRV fallback) were architected, reviewed, and tested line-by-line by the candidate.
+In adherence to transparency and evaluation guidelines:
+> *"Used AI to understand third-party API nuances, generate initial component boilerplate, investigate deployment error traces, and explore alternative architectural approaches. The system architecture, database schema, hybrid wishlist persistence model, responsive styling system, and application behavior were designed, implemented, and owned by the candidate."*
+
+- **AI Pair-Programming Tooling**: Google Antigravity / Gemini.
+- **Scope of AI Assistance**: Rapid scaffolding of boilerplate types, exploratory mock generation for Vitest test suites, and formatting documentation.
+- **Candidate Ownership**: End-to-end full-stack design, Express route handling, MongoDB unique compound index design, defensive null-safety guards, Vercel reverse proxy configuration, and cross-browser responsive layout.
 
 ---
 
