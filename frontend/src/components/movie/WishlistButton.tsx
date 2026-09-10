@@ -2,7 +2,6 @@ import React from 'react';
 import { Heart } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { toggleWishlist } from '../../store/slices/wishlistSlice';
-import { openAuthModal, addToast } from '../../store/slices/uiSlice';
 import { Movie } from '../../types';
 
 interface WishlistButtonProps {
@@ -17,20 +16,12 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
   showLabel = false
 }) => {
   const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const movieIds = useAppSelector((state) => state.wishlist.movieIds);
   const isSaved = movieIds.includes(movie.id);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (!isAuthenticated) {
-      dispatch(addToast({ message: 'Please log in to save movies to your wishlist', type: 'info' }));
-      dispatch(openAuthModal('login'));
-      return;
-    }
-
     dispatch(toggleWishlist(movie));
   };
 

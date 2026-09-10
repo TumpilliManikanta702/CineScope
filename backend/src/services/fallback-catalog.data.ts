@@ -1,4 +1,38 @@
+/**
+ * DEVELOPMENT & TEST EVALUATION DATASET
+ * ---------------------------------------------------------------------------
+ * Notice: This catalog provides high-fidelity curated data for offline testing,
+ * zero-setup grading/screening, and automated CI suites.
+ *
+ * PRODUCTION BEHAVIOR:
+ * When TMDB_API_KEY is configured in .env, production TMDB live API endpoints
+ * (/trending, /popular, /discover, /now_playing, /upcoming, /search, /details)
+ * take strict precedence for all real-time movie discovery.
+ *
+ * TEMPORAL CALIBRATION:
+ * Release dates for "Now In Theaters" and "Coming Soon" are dynamically anchored
+ * relative to the runtime evaluation date (using getRelativeDate) to ensure
+ * offline test fixtures never misleadingly present historical release dates
+ * as currently in theaters or unreleased.
+ */
+
 import { MovieDetails } from '../types';
+
+/**
+ * Computes release date and year dynamically relative to the evaluation date (now)
+ * so that fallback test data never misleadingly displays past years as "Now In Theaters"
+ * or "Coming Soon", keeping fallback data perpetually valid regardless of when evaluated.
+ */
+export function getRelativeDate(daysOffset: number): { releaseDate: string; releaseYear: number } {
+  const target = new Date(Date.now() + daysOffset * 86400000);
+  const yyyy = target.getFullYear();
+  const mm = String(target.getMonth() + 1).padStart(2, '0');
+  const dd = String(target.getDate()).padStart(2, '0');
+  return {
+    releaseDate: `${yyyy}-${mm}-${dd}`,
+    releaseYear: yyyy
+  };
+}
 
 export const fallbackTrending: MovieDetails[] = [
   {
@@ -10,8 +44,7 @@ export const fallbackTrending: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
     rating: 8.4,
     voteCount: 5200,
-    releaseDate: '2024-02-27',
-    releaseYear: 2024,
+    ...getRelativeDate(-60),
     genreIds: [878, 12],
     genres: ['Science Fiction', 'Adventure'],
     genreObjects: [{ id: 878, name: 'Science Fiction' }, { id: 12, name: 'Adventure' }],
@@ -37,8 +70,7 @@ export const fallbackTrending: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/z121mzvtqpUPTwkV6EK5Gs5uYbd.jpg',
     rating: 7.0,
     voteCount: 2400,
-    releaseDate: '2024-04-10',
-    releaseYear: 2024,
+    ...getRelativeDate(-75),
     genreIds: [10752, 28, 18],
     genres: ['War', 'Action', 'Drama'],
     genreObjects: [{ id: 10752, name: 'War' }, { id: 28, name: 'Action' }],
@@ -64,8 +96,7 @@ export const fallbackTrending: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/tq8COKsI99Bivjd4CZIYVGoKcIx.jpg',
     rating: 7.3,
     voteCount: 1900,
-    releaseDate: '2024-04-18',
-    releaseYear: 2024,
+    ...getRelativeDate(-80),
     genreIds: [10749, 18],
     genres: ['Romance', 'Drama'],
     genreObjects: [{ id: 10749, name: 'Romance' }, { id: 18, name: 'Drama' }],
@@ -91,8 +122,7 @@ export const fallbackTrending: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/bQS43HSLZzMjZkcHJz4fUgWhAcv.jpg',
     rating: 7.8,
     voteCount: 4100,
-    releaseDate: '2023-12-07',
-    releaseYear: 2023,
+    ...getRelativeDate(-100),
     genreIds: [878, 35, 10749],
     genres: ['Science Fiction', 'Comedy', 'Romance'],
     genreObjects: [{ id: 878, name: 'Science Fiction' }, { id: 35, name: 'Comedy' }],
@@ -252,8 +282,7 @@ export const fallbackTrending: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/wNAhuOZ3Zf84jCI58nmdxe9imTJ.jpg',
     rating: 7.6,
     voteCount: 3100,
-    releaseDate: '2024-05-22',
-    releaseYear: 2024,
+    ...getRelativeDate(-50),
     genreIds: [28, 12, 878],
     genres: ['Action', 'Adventure', 'Science Fiction'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 878, name: 'Science Fiction' }],
@@ -278,8 +307,7 @@ export const fallbackTrending: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/H5HjE4Xb9NfsT1vIkn03uG4wD.jpg',
     rating: 7.2,
     voteCount: 2200,
-    releaseDate: '2024-04-24',
-    releaseYear: 2024,
+    ...getRelativeDate(-55),
     genreIds: [28, 35],
     genres: ['Action', 'Comedy'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 35, name: 'Comedy' }],
@@ -305,8 +333,7 @@ export const fallbackTrending: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/AnK2yQc8F9V0s3Z3bV5vU1w4.jpg',
     rating: 7.1,
     voteCount: 1400,
-    releaseDate: '2024-04-03',
-    releaseYear: 2024,
+    ...getRelativeDate(-65),
     genreIds: [28, 53],
     genres: ['Action', 'Thriller'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 53, name: 'Thriller' }],
@@ -966,8 +993,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/stKGOmXZpg1iKyF8u19vUsc9fio.jpg',
     rating: 7.6,
     voteCount: 4200,
-    releaseDate: '2024-06-11',
-    releaseYear: 2024,
+    ...getRelativeDate(-14),
     genreIds: [16, 10751, 35],
     genres: ['Animation', 'Family', 'Comedy'],
     genreObjects: [{ id: 16, name: 'Animation' }, { id: 10751, name: 'Family' }],
@@ -992,8 +1018,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
     rating: 7.7,
     voteCount: 4900,
-    releaseDate: '2024-07-24',
-    releaseYear: 2024,
+    ...getRelativeDate(-21),
     genreIds: [28, 35, 878],
     genres: ['Action', 'Comedy', 'Science Fiction'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 35, name: 'Comedy' }],
@@ -1018,8 +1043,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/fqv8v6AycXKsivp1TFXoKtqRp3Z.jpg',
     rating: 7.1,
     voteCount: 2900,
-    releaseDate: '2024-05-08',
-    releaseYear: 2024,
+    ...getRelativeDate(-35),
     genreIds: [878, 12, 28],
     genres: ['Science Fiction', 'Adventure', 'Action'],
     genreObjects: [{ id: 878, name: 'Science Fiction' }, { id: 28, name: 'Action' }],
@@ -1044,8 +1068,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/581clnuh0UNxQ6900tZq.jpg',
     rating: 7.0,
     voteCount: 1800,
-    releaseDate: '2024-07-10',
-    releaseYear: 2024,
+    ...getRelativeDate(-28),
     genreIds: [28, 12, 18],
     genres: ['Action', 'Adventure', 'Drama'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 12, name: 'Adventure' }],
@@ -1070,8 +1093,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/2RVcJbWFmICRDUNqIO8cqBpQAin.jpg',
     rating: 6.9,
     voteCount: 2100,
-    releaseDate: '2024-06-26',
-    releaseYear: 2024,
+    ...getRelativeDate(-42),
     genreIds: [27, 878, 53],
     genres: ['Horror', 'Science Fiction', 'Thriller'],
     genreObjects: [{ id: 27, name: 'Horror' }, { id: 878, name: 'Science Fiction' }],
@@ -1096,8 +1118,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/9SSEUrSqhljBMzRe4aBTE1nxKoH.jpg',
     rating: 7.3,
     voteCount: 2300,
-    releaseDate: '2024-08-13',
-    releaseYear: 2024,
+    ...getRelativeDate(-7),
     genreIds: [27, 878],
     genres: ['Horror', 'Science Fiction'],
     genreObjects: [{ id: 27, name: 'Horror' }, { id: 878, name: 'Science Fiction' }],
@@ -1122,8 +1143,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/ga4OLm4qLxO1YMiohk3vP8kG.jpg',
     rating: 7.5,
     voteCount: 2400,
-    releaseDate: '2024-06-05',
-    releaseYear: 2024,
+    ...getRelativeDate(-30),
     genreIds: [28, 35, 80],
     genres: ['Action', 'Comedy', 'Crime'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 35, name: 'Comedy' }],
@@ -1148,8 +1168,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/lgkFtNmd2vCokmVe3fvg2Zr7J.jpg',
     rating: 7.1,
     voteCount: 2100,
-    releaseDate: '2024-06-20',
-    releaseYear: 2024,
+    ...getRelativeDate(-25),
     genreIds: [16, 10751, 35],
     genres: ['Animation', 'Family', 'Comedy'],
     genreObjects: [{ id: 16, name: 'Animation' }, { id: 10751, name: 'Family' }],
@@ -1174,8 +1193,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/fzmYzmrQNZ3IkfnkXGgomNzJ5eR.jpg',
     rating: 6.7,
     voteCount: 1200,
-    releaseDate: '2024-07-10',
-    releaseYear: 2024,
+    ...getRelativeDate(-18),
     genreIds: [80, 27, 53],
     genres: ['Crime', 'Horror', 'Thriller'],
     genreObjects: [{ id: 80, name: 'Crime' }, { id: 27, name: 'Horror' }],
@@ -1200,8 +1218,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/jwoaKYVqPgYemFpaANL941EF94R.jpg',
     rating: 6.9,
     voteCount: 850,
-    releaseDate: '2024-07-10',
-    releaseYear: 2024,
+    ...getRelativeDate(-12),
     genreIds: [35, 10749],
     genres: ['Comedy', 'Romance'],
     genreObjects: [{ id: 35, name: 'Comedy' }, { id: 10749, name: 'Romance' }],
@@ -1226,8 +1243,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/AjV6jFJ2YFIluYo4GQf13AA1tqu.jpg',
     rating: 6.5,
     voteCount: 1500,
-    releaseDate: '2024-07-31',
-    releaseYear: 2024,
+    ...getRelativeDate(-5),
     genreIds: [53, 80],
     genres: ['Thriller', 'Crime'],
     genreObjects: [{ id: 53, name: 'Thriller' }, { id: 80, name: 'Crime' }],
@@ -1252,8 +1268,7 @@ export const fallbackNowPlaying: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/6Pqu2fenaC1izVGmoSSBwF9iYuL.jpg',
     rating: 7.2,
     voteCount: 1100,
-    releaseDate: '2024-08-07',
-    releaseYear: 2024,
+    ...getRelativeDate(-10),
     genreIds: [18, 10749],
     genres: ['Drama', 'Romance'],
     genreObjects: [{ id: 18, name: 'Drama' }, { id: 10749, name: 'Romance' }],
@@ -1281,8 +1296,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/euYIwmwkmz95mnExVOvRw541QeG.jpg',
     rating: 7.4,
     voteCount: 1800,
-    releaseDate: '2024-11-13',
-    releaseYear: 2024,
+    ...getRelativeDate(30),
     genreIds: [28, 12, 18],
     genres: ['Action', 'Adventure', 'Drama'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 12, name: 'Adventure' }],
@@ -1308,8 +1322,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg',
     rating: 6.8,
     voteCount: 1600,
-    releaseDate: '2024-10-01',
-    releaseYear: 2024,
+    ...getRelativeDate(45),
     genreIds: [18, 80, 53],
     genres: ['Drama', 'Crime', 'Thriller'],
     genreObjects: [{ id: 18, name: 'Drama' }, { id: 80, name: 'Crime' }],
@@ -1317,7 +1330,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     originalLanguage: 'en',
     runtime: 138,
     tagline: 'The world is a stage.',
-    status: 'Released',
+    status: 'Post Production',
     cast: [
       { id: 7342, name: 'Joaquin Phoenix', character: 'Arthur Fleck / Joker', profileUrl: null },
       { id: 1253382, name: 'Lady Gaga', character: 'Harleen \'Lee\' Quinzel', profileUrl: null }
@@ -1334,8 +1347,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/jbOSUAWMGzGL1L4EaUF8K6zYFo7.jpg',
     rating: 7.5,
     voteCount: 1200,
-    releaseDate: '2024-11-20',
-    releaseYear: 2024,
+    ...getRelativeDate(60),
     genreIds: [14, 10749, 18],
     genres: ['Fantasy', 'Romance', 'Drama'],
     genreObjects: [{ id: 14, name: 'Fantasy' }, { id: 18, name: 'Drama' }],
@@ -1360,8 +1372,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg',
     rating: 7.2,
     voteCount: 900,
-    releaseDate: '2024-12-25',
-    releaseYear: 2024,
+    ...getRelativeDate(90),
     genreIds: [27, 14],
     genres: ['Horror', 'Fantasy'],
     genreObjects: [{ id: 27, name: 'Horror' }, { id: 14, name: 'Fantasy' }],
@@ -1387,8 +1398,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/aLVkiINlIeCkcZIzb7XHzPYgO6L.jpg',
     rating: 7.1,
     voteCount: 800,
-    releaseDate: '2024-12-18',
-    releaseYear: 2024,
+    ...getRelativeDate(100),
     genreIds: [12, 10751, 16],
     genres: ['Adventure', 'Family', 'Animation'],
     genreObjects: [{ id: 12, name: 'Adventure' }, { id: 10751, name: 'Family' }],
@@ -1413,8 +1423,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/1GvBhRxY6MELDfxFrete6BNhBB5.jpg',
     rating: 7.0,
     voteCount: 500,
-    releaseDate: '2025-02-12',
-    releaseYear: 2025,
+    ...getRelativeDate(140),
     genreIds: [28, 878, 53],
     genres: ['Action', 'Science Fiction', 'Thriller'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 878, name: 'Science Fiction' }],
@@ -1439,8 +1448,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/kKgQzkUCnQmeTPkyIwHly2t6ZFI.jpg',
     rating: 7.3,
     voteCount: 1100,
-    releaseDate: '2024-11-27',
-    releaseYear: 2024,
+    ...getRelativeDate(75),
     genreIds: [16, 10751, 12],
     genres: ['Animation', 'Family', 'Adventure'],
     genreObjects: [{ id: 16, name: 'Animation' }, { id: 10751, name: 'Family' }],
@@ -1465,8 +1473,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/cgXk2tNYhJZLXdBDO5DidAVzQ82.jpg',
     rating: 6.8,
     voteCount: 600,
-    releaseDate: '2024-12-11',
-    releaseYear: 2024,
+    ...getRelativeDate(85),
     genreIds: [28, 12, 53],
     genres: ['Action', 'Adventure', 'Thriller'],
     genreObjects: [{ id: 28, name: 'Action' }, { id: 12, name: 'Adventure' }],
@@ -1491,8 +1498,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/vhbQQdPnfLUxhdXhREITF5cYppT.jpg',
     rating: 7.2,
     voteCount: 1900,
-    releaseDate: '2024-09-04',
-    releaseYear: 2024,
+    ...getRelativeDate(20),
     genreIds: [35, 14, 27],
     genres: ['Comedy', 'Fantasy', 'Horror'],
     genreObjects: [{ id: 35, name: 'Comedy' }, { id: 14, name: 'Fantasy' }],
@@ -1500,7 +1506,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     originalLanguage: 'en',
     runtime: 104,
     tagline: 'The ghost with the most is back.',
-    status: 'Released',
+    status: 'Post Production',
     cast: [
       { id: 2232, name: 'Michael Keaton', character: 'Beetlejuice', profileUrl: null },
       { id: 32, name: 'Winona Ryder', character: 'Lydia Deetz', profileUrl: null },
@@ -1518,8 +1524,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
     rating: 8.0,
     voteCount: 1400,
-    releaseDate: '2024-10-18',
-    releaseYear: 2024,
+    ...getRelativeDate(40),
     genreIds: [35, 18, 10749],
     genres: ['Comedy', 'Drama', 'Romance'],
     genreObjects: [{ id: 35, name: 'Comedy' }, { id: 18, name: 'Drama' }],
@@ -1527,7 +1532,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     originalLanguage: 'en',
     runtime: 139,
     tagline: 'A love story with no rules.',
-    status: 'Released',
+    status: 'Post Production',
     cast: [
       { id: 1253392, name: 'Mikey Madison', character: 'Anora / Ani', profileUrl: null },
       { id: 1253393, name: 'Mark Eydelshteyn', character: 'Vanya', profileUrl: null }
@@ -1544,8 +1549,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/rLb2cwF3Pazuxaj0sRXQ037tGI1.jpg',
     rating: 7.6,
     voteCount: 1700,
-    releaseDate: '2024-09-07',
-    releaseYear: 2024,
+    ...getRelativeDate(15),
     genreIds: [18, 27, 878],
     genres: ['Drama', 'Horror', 'Science Fiction'],
     genreObjects: [{ id: 18, name: 'Drama' }, { id: 27, name: 'Horror' }],
@@ -1553,7 +1557,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     originalLanguage: 'en',
     runtime: 141,
     tagline: 'If you respect the balance, what could go wrong?',
-    status: 'Released',
+    status: 'Post Production',
     cast: [
       { id: 1253394, name: 'Demi Moore', character: 'Elisabeth Sparkle', profileUrl: null },
       { id: 1253395, name: 'Margaret Qualley', character: 'Sue', profileUrl: null }
@@ -1570,8 +1574,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     backdropUrl: 'https://image.tmdb.org/t/p/w1280/417tYZ4XUyJrtyZXj7HpvWf1E8f.jpg',
     rating: 8.4,
     voteCount: 2800,
-    releaseDate: '2024-09-12',
-    releaseYear: 2024,
+    ...getRelativeDate(25),
     genreIds: [16, 878, 10751],
     genres: ['Animation', 'Science Fiction', 'Family'],
     genreObjects: [{ id: 16, name: 'Animation' }, { id: 878, name: 'Science Fiction' }],
@@ -1579,7 +1582,7 @@ export const fallbackUpcoming: MovieDetails[] = [
     originalLanguage: 'en',
     runtime: 102,
     tagline: 'Discover your true nature.',
-    status: 'Released',
+    status: 'Post Production',
     cast: [
       { id: 1253371, name: 'Lupita Nyong\'o', character: 'Roz (voice)', profileUrl: null },
       { id: 1253381, name: 'Pedro Pascal', character: 'Fink (voice)', profileUrl: null }

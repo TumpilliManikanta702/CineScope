@@ -7,6 +7,114 @@ import { RatingBadge } from '../components/common/RatingBadge';
 import { WishlistButton } from '../components/movie/WishlistButton';
 import { MovieRail } from '../components/movie/MovieRail';
 import { ErrorState } from '../components/common/ErrorState';
+import { CastMember } from '../types';
+
+// ==========================================
+// CAST CARD with Initials Avatar Fallback
+// ==========================================
+
+/** Generate up to 2 initials from a person's full name, e.g. "Timothée Chalamet" → "TC" */
+function getInitials(name: string): string {
+  if (!name) return '??';
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '??';
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+/** Deterministic hue derived from the actor's name for visual variety across cards */
+function getAvatarHue(name: string): number {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash) % 360;
+}
+
+const CastCard: React.FC<{ actor: CastMember }> = ({ actor }) => {
+  const [imgFailed, setImgFailed] = React.useState(false);
+  const hasValidUrl = actor.profileUrl && actor.profileUrl.trim().length > 0 && !imgFailed;
+
+  const initials = getInitials(actor.name);
+  const hue = getAvatarHue(actor.name);
+
+  return (
+    <div
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-subtle)',
+        borderRadius: 'var(--radius-md)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      <div style={{ width: '100%', aspectRatio: '1 / 1.2', backgroundColor: 'var(--bg-subtle)', overflow: 'hidden' }}>
+        {hasValidUrl ? (
+          <img
+            src={actor.profileUrl!}
+            alt={`Photo of ${actor.name}`}
+            loading="lazy"
+            onError={() => setImgFailed(true)}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        ) : (
+          <div
+            aria-label={`${actor.name} — no photo available`}
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              background: `linear-gradient(145deg, hsl(${hue}, 25%, 18%) 0%, hsl(${hue}, 20%, 12%) 100%)`
+            }}
+          >
+            <div
+              style={{
+                width: '3.2rem',
+                height: '3.2rem',
+                borderRadius: '50%',
+                background: `linear-gradient(135deg, hsl(${hue}, 40%, 35%) 0%, hsl(${hue}, 35%, 25%) 100%)`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.15rem',
+                fontWeight: 700,
+                color: `hsl(${hue}, 30%, 75%)`,
+                letterSpacing: '0.05em',
+                border: `2px solid hsl(${hue}, 30%, 30%)`
+              }}
+            >
+              {initials}
+            </div>
+            <span
+              style={{
+                fontSize: '0.7rem',
+                color: `hsl(${hue}, 15%, 50%)`,
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em'
+              }}
+            >
+              No Photo
+            </span>
+          </div>
+        )}
+      </div>
+      <div style={{ padding: '0.65rem 0.75rem' }}>
+        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {actor.name}
+        </div>
+        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '0.15rem' }}>
+          {actor.character}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const MovieDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -320,49 +428,7 @@ export const MovieDetailsPage: React.FC = () => {
               }}
             >
               {movie.cast.map((actor) => (
-                <div
-                  key={actor.id}
-                  style={{
-                    backgroundColor: 'var(--bg-surface)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 'var(--radius-md)',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column'
-                  }}
-                >
-                  <div style={{ width: '100%', aspectRatio: '1 / 1.2', backgroundColor: 'var(--bg-subtle)' }}>
-                    {actor.profileUrl ? (
-                      <img
-                        src={actor.profileUrl}
-                        alt={actor.name}
-                        loading="lazy"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'var(--text-muted)'
-                        }}
-                      >
-                        <Users size={32} opacity={0.5} />
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ padding: '0.65rem 0.75rem' }}>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {actor.name}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '0.15rem' }}>
-                      {actor.character}
-                    </div>
-                  </div>
-                </div>
+                <CastCard key={actor.id} actor={actor} />
               ))}
             </div>
           </section>

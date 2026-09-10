@@ -6,7 +6,7 @@ import { ToastContainer } from '../components/common/ToastContainer';
 import { AuthModal } from '../components/auth/AuthModal';
 import { useAppDispatch, useAppSelector } from '../store';
 import { fetchCurrentUser } from '../store/slices/authSlice';
-import { fetchWishlist } from '../store/slices/wishlistSlice';
+import { syncGuestWishlist } from '../store/slices/wishlistSlice';
 
 export const RootLayout: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -23,7 +23,7 @@ export const RootLayout: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      dispatch(fetchWishlist());
+      dispatch(syncGuestWishlist());
     }
   }, [dispatch, isAuthenticated]);
 

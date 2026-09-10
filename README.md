@@ -13,7 +13,7 @@
 [![Express](https://img.shields.io/badge/Express-4.21-000000?logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas%20Ready-47a248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![TMDB API](https://img.shields.io/badge/TMDB_API-v3%20Integrated-01d277?logo=themoviedatabase&logoColor=white)](https://www.themoviedb.org/)
-[![Tests](https://img.shields.io/badge/Tests-23%2F23%20Passing-brightgreen?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Tests](https://img.shields.io/badge/Tests-28%2F28%20Passing-brightgreen?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
@@ -56,7 +56,7 @@ graph TD
 ### Core Architecture Highlights
 1. **Strict Service Decoupling**: The React client **never** calls TMDB directly. All external movie requests flow through the backend gateway. This prevents client credential leaks, avoids CORS problems, and shields frontend components from upstream third-party API changes.
 2. **TMDB Primary Data Source**: Live TMDB v3 API is the primary catalog. For automated testing and zero-setup evaluations, the service includes high-fidelity fallback data so core features work even if external API limits or network drops occur.
-3. **Optimistic Database Persistence**: Wishlist additions toggle immediately on the UI (`♡ → ♥`) with instant feedback, while committing to MongoDB using an atomic compound unique index (`{ userId: 1, movieId: 1 }`).
+3. **Hybrid Local-First & Cloud Persistence**: Wishlist additions work seamlessly without mandatory authentication—guests can curate immediately to `localStorage` (surviving tab/browser reopen), with zero friction. Upon logging in or registering, guest-curated titles are automatically migrated and synchronized with MongoDB using an atomic compound unique index (`{ userId: 1, movieId: 1 }`).
 4. **Context-Preserving Routing**: Searching, filtering, and paging are synchronized bidirectionally with browser URL search parameters (`useUrlState`). Users navigating from Movie Details back to search results return to the exact same query, page, and scroll context.
 
 ---
@@ -101,12 +101,12 @@ graph TD
 - Related recommendations rail and similar titles discovery.
 - Smart **"Back to Results"** button that pops the history stack (`navigate(-1)`) to preserve previous search queries and scroll position.
 
-### 4. Persistent Watchlist
-- Authenticated personal watchlist backed by MongoDB.
+### 4. Persistent Watchlist & Hybrid Curation
+- **Local-First Zero-Setup Guest Mode**: Any visitor can instantly curate movies to their persistent watchlist via `localStorage` without being forced to create an account. Saved movies survive browser refreshes, tab closures, and application restarts.
+- **Automated Cloud Account Migration**: When a guest user logs in or registers, local titles are automatically migrated and synchronized up to MongoDB Atlas with atomic duplicate prevention.
 - **Optimistic UI Updates**: Heart icon updates instantly (`♡ → ♥`) before network resolution, with automatic rollback and toast notification if an error occurs.
-- Database uniqueness guaranteed via `{ userId: 1, movieId: 1 }` compound index.
-- Search and filter within saved titles.
-- Rehydrates automatically upon user login and survives page reloads and logout/login cycles.
+- **Database Uniqueness**: Guaranteed via `{ userId: 1, movieId: 1 }` compound index in MongoDB.
+- **In-Library Search**: Fast client-side filtering within saved titles on `/wishlist`.
 
 ### 5. Authentication & Account Management
 - Stateless JWT authentication with bcryptjs password hashing (10 salt rounds).
@@ -177,7 +177,7 @@ All endpoints are prefixed with `/api`.
 
 ### 1. Clone & Setup Environment
 ```bash
-git clone https://github.com/your-username/CineScope.git
+git clone https://github.com/TumpilliManikanta702/CineScope.git
 cd CineScope
 
 # Copy environment example
@@ -222,16 +222,16 @@ Open **`http://localhost:5173`** in your browser.
 
 ## 🧪 Testing & Verification
 
-CineScope includes **23 automated tests** covering backend integration, database uniqueness, error scenarios, and frontend component states.
+CineScope includes **28 automated tests** (19 backend + 9 frontend) covering backend integration, database uniqueness, error scenarios, guest-to-cloud wishlist persistence, and frontend component states.
 
 ```bash
-# Run both backend and frontend test suites
+# Run both backend and frontend test suites (28 tests)
 npm test
 
-# Run backend tests only (17 tests)
+# Run backend tests only (19 tests)
 npm run test:backend
 
-# Run frontend tests only (6 tests)
+# Run frontend tests only (9 tests)
 npm run test:frontend
 
 # Run full TypeScript typecheck across monorepo
@@ -244,8 +244,10 @@ npm run build
 ### Test Coverage Summary
 - **Auth Suite (6 Tests)**: Registration, email collision (`409`), credential verification, bad password rejection (`401`), JWT decoding, unauthenticated profile rejection.
 - **Wishlist Suite (5 Tests)**: Unauthenticated denial (`401`), addition, duplicate wishlist prevention (`409`), retrieval, deletion.
-- **Movie Suite (6 Tests)**: Trending pagination, rail discovery, movie details resolution, 404 handler, query/filter searching, genre mapping.
-- **Frontend Suite (6 Tests)**: `MovieCard` metadata rendering, missing poster fallbacks, accessible wishlist toggle button, `EmptyState` CTA actions, `ErrorState` retry handler, `SearchBar` 400ms debounce verification.
+- **Movie Suite (8 Tests)**: Trending pagination, rail discovery, movie details resolution, 404 handler, query/filter searching, genre mapping.
+- **Frontend Component Suite (3 Tests)**: `MovieCard` metadata rendering, missing poster fallbacks, accessible wishlist toggle button with aria labels.
+- **Common UX Suite (3 Tests)**: `EmptyState` CTA actions, `ErrorState` retry handler, `SearchBar` 400ms debounce verification.
+- **Guest Wishlist Suite (3 Tests)**: Guest movie saving to localStorage without mandatory login, wishlist toggling/removal, and `/wishlist` guest curation banner presentation.
 
 ---
 
@@ -271,6 +273,9 @@ The backend service catches timeouts and upstream HTTP errors gracefully, return
 
 ### 6. Windows Node.js DNS SRV Resolution Bug Fix
 When connecting to MongoDB Atlas on Windows environments, Node.js `dns.promises.resolveSrv` can trigger `querySrv ECONNREFUSED` due to OS-level DNS server bugs. CineScope automatically handles this by calling `dns.setServers(['8.8.8.8', '8.8.4.4'])` if initial resolution fails, guaranteeing zero-friction Atlas connectivity.
+
+### 7. Why a Hybrid Persistence Model (Local-First Guest Storage + Cloud Sync)?
+In modern consumer discovery apps, forcing users to register before they can perform lightweight curation introduces immediate user friction. CineScope implements a local-first pattern: unauthenticated visitors can curate movies immediately into `localStorage`, surviving browser closures and page reloads. The moment they register or log in, the client's `syncGuestWishlist` engine automatically commits those titles into MongoDB Atlas under their account, delivering zero friction for new visitors and cloud persistence for returning members.
 
 ---
 
