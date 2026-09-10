@@ -34,16 +34,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
       )}
 
       {/* Cinematic Gradient Overlays: Dark content on left, vibrant image on right */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: `
-            linear-gradient(to right, rgba(11, 13, 19, 0.97) 0%, rgba(11, 13, 19, 0.82) 32%, rgba(11, 13, 19, 0.15) 56%, transparent 75%),
-            linear-gradient(to top, rgba(11, 13, 19, 0.94) 0%, rgba(11, 13, 19, 0.25) 20%, transparent 45%)
-          `
-        }}
-      />
+      <div className="hero-gradient-overlay" />
 
       {/* Hero Content & Poster Container */}
       <div className="hero-inner-container">

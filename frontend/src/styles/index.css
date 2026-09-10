@@ -226,6 +226,23 @@ input:focus, select:focus, textarea:focus {
   gap: 2.5rem;
 }
 
+.hero-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: 
+    linear-gradient(to right, rgba(11, 13, 19, 0.97) 0%, rgba(11, 13, 19, 0.82) 32%, rgba(11, 13, 19, 0.15) 56%, transparent 75%),
+    linear-gradient(to top, rgba(11, 13, 19, 0.94) 0%, rgba(11, 13, 19, 0.25) 20%, transparent 45%);
+}
+
+@media (max-width: 768px) {
+  .hero-gradient-overlay {
+    background: 
+      linear-gradient(to top, rgba(11, 13, 19, 0.98) 0%, rgba(11, 13, 19, 0.85) 45%, rgba(11, 13, 19, 0.35) 85%, transparent 100%),
+      linear-gradient(to right, rgba(11, 13, 19, 0.85) 0%, transparent 100%) !important;
+  }
+}
+
 /* Tablet & Mobile: Comfortable horizontal breathing room & rounded corners */
 @media (max-width: 1023px) {
   .hero-viewport-wrapper {
