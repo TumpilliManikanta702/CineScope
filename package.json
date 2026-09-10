@@ -1,0 +1,26 @@
+{
+  "name": "cinescope-monorepo",
+  "version": "1.0.0",
+  "description": "CineScope - Production-Grade Movie Discovery Platform",
+  "private": true,
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "test:backend": "npm --prefix backend test",
+    "test:frontend": "npm --prefix frontend test",
+    "test": "npm run test:backend && npm run test:frontend",
+    "lint": "npm --prefix backend run lint && npm --prefix frontend run lint"
+  },
+  "keywords": [
+    "cinescope",
+    "movie-discovery",
+    "react",
+    "express",
+    "typescript",
+    "mongodb",
+    "tmdb"
+  ],
+  "author": "Trackzio Candidate",
+  "license": "MIT"
+}
