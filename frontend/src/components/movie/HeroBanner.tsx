@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Info } from 'lucide-react';
 import { Movie } from '../../types';
@@ -11,6 +11,7 @@ interface HeroBannerProps {
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
   const navigate = useNavigate();
+  const [imageError, setImageError] = useState(false);
 
   return (
     <div
@@ -22,17 +23,19 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
         borderRadius: 'var(--radius-lg)',
         overflow: 'hidden',
         marginBottom: '3rem',
-        backgroundColor: 'var(--bg-subtle)',
+        backgroundColor: 'var(--bg-surface)',
+        backgroundImage: 'radial-gradient(ellipse at top right, rgba(245, 158, 11, 0.15), transparent 60%)',
         border: '1px solid var(--border-subtle)',
         display: 'flex',
         alignItems: 'flex-end'
       }}
     >
-      {/* High-res Backdrop with Fallback */}
-      {movie.backdropUrl && (
+      {/* High-res Backdrop with Graceful Fallback */}
+      {movie.backdropUrl && !imageError && (
         <img
           src={movie.backdropUrl}
           alt={movie.title}
+          onError={() => setImageError(true)}
           style={{
             position: 'absolute',
             inset: 0,
@@ -57,20 +60,53 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
         }}
       />
 
-      {/* Hero Content Left Aligned */}
+      {/* Hero Content & Poster Container */}
       <div
         style={{
           position: 'relative',
           zIndex: 2,
           padding: '2.5rem 2rem',
-          maxWidth: '680px',
+          width: '100%',
           display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem'
+          alignItems: 'center',
+          gap: '2.25rem'
         }}
       >
-        {/* Badges & Meta */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        {/* Prominent Movie Poster Card on Tablet & Desktop */}
+        {movie.posterUrl && (
+          <div
+            className="hero-poster-card"
+            style={{
+              width: '190px',
+              minWidth: '190px',
+              aspectRatio: '2 / 3',
+              borderRadius: 'var(--radius-md)',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-lg)',
+              border: '1px solid var(--border-medium)',
+              backgroundColor: 'var(--bg-surface)',
+              flexShrink: 0
+            }}
+          >
+            <img
+              src={movie.posterUrl}
+              alt={movie.title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
+        )}
+
+        {/* Hero Metadata Column */}
+        <div
+          style={{
+            maxWidth: '640px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem'
+          }}
+        >
+          {/* Badges & Meta */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span
             style={{
               fontSize: '0.75rem',
@@ -160,5 +196,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ movie }) => {
         </div>
       </div>
     </div>
+
+    <style>{`
+      @media (max-width: 768px) {
+        .hero-poster-card {
+          display: none !important;
+        }
+      }
+    `}</style>
+  </div>
   );
 };
