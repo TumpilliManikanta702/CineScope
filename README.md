@@ -45,10 +45,10 @@
 
 | Resource | Production URL / Instructions |
 | :--- | :--- |
-| 🌐 **Live Web Application** | [https://cinescope-discovery.vercel.app](https://cinescope-discovery.vercel.app) *(or your Vercel deployment URL)* |
-| 🚀 **Live Backend API** | [https://cinescope-api.onrender.com](https://cinescope-api.onrender.com) *(or your Render/Railway backend URL)* |
+| 🌐 **Live Web Application** | [https://cine-scope-9ro9.vercel.app](https://cine-scope-9ro9.vercel.app) |
+| 🚀 **Live Backend API** | [https://cinescope-msp3.onrender.com](https://cinescope-msp3.onrender.com) |
 | 📹 **Video Walkthrough Demo** | [Watch Demo Video](https://youtu.be/YOUR-ACTUAL-VIDEO-ID) *(replace with your recording link)* |
-| 📊 **API Health & Status** | [`GET /api/health`](https://cinescope-api.onrender.com/api/health) *(or local: `http://localhost:5000/api/health`)* |
+| 📊 **API Health & Status** | [`GET /api/health`](https://cinescope-msp3.onrender.com/api/health) |
 
 **CineScope** is a full-stack movie discovery platform built with React, Node.js, Express, MongoDB, and TMDB, featuring persistent wishlists, intelligent search, caching, pagination, responsive UX, and resilient API handling.
 
